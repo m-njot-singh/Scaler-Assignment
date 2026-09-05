@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP: Inheritance, Polymorphism &amp; Why Abstraction Exists — Teaching Script</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300,0,0" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<style>
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── DESIGN TOKENS ──────────────────────────────────────── */
+    :root {
+      --primary: #053BEE;
+      --primary-dark: #032CB8;
+      --primary-mid: #2050F0;
+      --primary-light: #E8EDFF;
+      --primary-subtle: #F2F5FF;
+
+      --accent: #EB5324;
+      /* eyebrow labels ONLY */
+      --accent-light: #FFF0EB;
+
+      --ink: #000A1B;
+      --ink-2: #1A1F2E;
+      --ink-muted: #666666;
+      --ink-faint: #999999;
+
+      --rule: #CCCCCC;
+      --sidebar-rule: #DCDCDC;
+      --surface: #F5F7FA;
+      --white: #FFFFFF;
+      --dark-bg-text: #F2F5FF;
+      /* body text on primary surfaces */
+
+      --green: #05604F;
+      --green-light: #EDFAF4;
+      --green-dark: #044A3D;
+      --green-mid: #2DBD74;
+      --red: #D93520;
+      --red-light: #FEF2F0;
+      --red-dark: #7A2716;
+
+      --font-body: 'DM Sans', sans-serif;
+      --font-display: 'Lora', serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--white);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAVIGATION ─────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--white);
+      border-bottom: 1px solid var(--rule);
+      z-index: 100;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--ink-muted);
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    /* ── COVER / HERO ───────────────────────────────────────── */
+    .cover {
+      background: var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 120px 48px 96px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Ghost circle decoration — the ONLY decorative technique allowed */
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -80px;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .cover::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      right: 80px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .cover-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 24px;
+    }
+
+    .cover h1 {
+      font-family: var(--font-display);
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 600;
+      line-height: 1.0;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      max-width: 700px;
+      margin-bottom: 32px;
+    }
+
+    .cover-sub {
+      font-size: 18px;
+      color: var(--dark-bg-text);
+      max-width: 520px;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .cover-meta {
+      margin-top: 80px;
+      display: flex;
+      gap: 48px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .cover-meta-item label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 4px;
+    }
+
+    .cover-meta-item span {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    /* ── SECTIONS ───────────────────────────────────────────── */
+    section {
+      padding: 96px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-num {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 32px;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    h4 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 17px;
+      color: var(--ink-muted);
+      line-height: 1.75;
+      margin-bottom: 20px;
+      max-width: 680px;
+    }
+
+    p strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    hr.rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 0 48px;
+    }
+
+    /* ── PILLAR / COLUMN GRID ───────────────────────────────── */
+    /* Technique: background color as gap-border via 2px gap */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 64px;
+    }
+
+    .pillar {
+      background: var(--white);
+      padding: 40px 36px;
+    }
+
+    .pillar-num {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .pillar h3 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .pillar p {
+      font-size: 15px;
+      max-width: none;
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    /* ── DO / DON'T CARDS ───────────────────────────────────── */
+    .do-dont {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .do-box,
+    .dont-box {
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .do-box {
+      background: var(--green-light);
+      color: var(--green-dark);
+      border-left: 3px solid var(--green-mid);
+    }
+
+    .do-box::before {
+      content: 'Do: ';
+      font-weight: 600;
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--green-mid);
+      margin-bottom: 4px;
+    }
+
+    .dont-box {
+      background: var(--red-light);
+      color: var(--red-dark);
+      border-left: 3px solid var(--red);
+    }
+
+    .dont-box::before {
+      content: "Don't: ";
+      font-weight: 600;
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 4px;
+    }
+
+    /* ── TABLE ──────────────────────────────────────────────── */
+    .data-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 64px;
+    }
+
+    .data-table th {
+      background: var(--primary);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 20px;
+      text-align: left;
+    }
+
+    .data-table td {
+      padding: 16px 20px;
+      font-size: 14px;
+      color: var(--ink-muted);
+      vertical-align: top;
+      border-bottom: 1px solid var(--rule);
+      line-height: 1.6;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:nth-child(even) td {
+      background: var(--surface);
+    }
+
+    .data-table td:first-child {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .tag {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── STAT / PROOF GRID ──────────────────────────────────── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 64px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      padding: 32px;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 42px;
+      color: var(--primary);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-desc {
+      font-size: 14px;
+      color: var(--ink-muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* ── CALLOUT ────────────────────────────────────────────── */
+    .callout {
+      border-left: 3px solid var(--primary);
+      padding: 20px 24px;
+      background: var(--primary-subtle);
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 32px;
+    }
+
+    .callout p {
+      font-size: 16px;
+      color: var(--primary-dark);
+      margin: 0;
+      max-width: none;
+      font-style: italic;
+    }
+
+    /* ── FEATURED BLOCK (primary bg + ghost circle) ─────────── */
+    .featured-block {
+      background: var(--primary);
+      border-radius: 16px;
+      padding: 64px 56px;
+      margin-bottom: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .featured-block::before {
+      content: '';
+      position: absolute;
+      right: -40px;
+      top: -60px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .featured-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.45);
+      margin-bottom: 16px;
+    }
+
+    .featured-text {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 48px);
+      color: var(--white);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      max-width: 640px;
+      margin-bottom: 20px;
+    }
+
+    .featured-note {
+      font-size: 14px;
+      color: var(--dark-bg-text);
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    /* ── COMPONENT SPACING RULES ────────────────────────────── */
+    /* Breathing room between prose blocks and component blocks  */
+    /* Use .prose-inner to wrap body paragraphs within sections  */
+    .prose-inner {
+      max-width: 680px;
+    }
+
+    /* 56px breathing room between prose and component blocks */
+    :is(.stat-grid, .mechanism, .callout, .featured-block, .board-question, .pillars, .card-grid, .action-strip, .timeline)+.prose-inner,
+    .prose-inner+ :is(.stat-grid, .mechanism, .callout, .featured-block, .board-question, .pillars, .card-grid, .action-strip, .timeline) {
+      margin-top: 56px;
+    }
+
+    /* 64px above h3 subheads that follow a component block */
+    :is(.stat-grid, .mechanism, .pillars, .callout, .featured-block, .card-grid, .action-strip)+h3 {
+      margin-top: 64px;
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────────── */
+    .doc-footer {
+      background: var(--ink);
+      padding: 64px 48px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .doc-footer h3 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: var(--white);
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    .doc-footer p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      max-width: none;
+    }
+
+    .footer-meta {
+      text-align: right;
+    }
+
+    .footer-meta label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.3);
+      display: block;
+      margin-bottom: 4px;
+      margin-top: 20px;
+    }
+
+    .footer-meta label:first-child {
+      margin-top: 0;
+    }
+
+    .footer-meta span {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ── NARRATIVE SECTION (full-bleed prose on tinted bg) ──── */
+    section.full-bleed {
+      max-width: none;
+      margin: 0;
+    }
+
+    .narrative-section {
+      background: var(--surface);
+      max-width: none;
+      margin: 0;
+    }
+
+    .narrative-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 96px 48px;
+    }
+
+    .narrative-body p {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.5vw, 28px);
+      line-height: 1.6;
+      color: var(--ink);
+      font-weight: 400;
+      max-width: none;
+      margin-bottom: 32px;
+    }
+
+    .narrative-body p em {
+      font-style: italic;
+      color: var(--primary);
+    }
+
+    .narrative-body p.large {
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      color: var(--primary);
+      margin-bottom: 48px;
+    }
+
+    /* ── CARD GRID (2-col bordered cards with hover) ────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 64px;
+    }
+
+    .card-grid-item {
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      padding: 32px;
+      background: var(--white);
+      transition: border-color 0.2s;
+    }
+
+    .card-grid-item:hover {
+      border-color: var(--primary);
+    }
+
+    .card-grid-item h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .card-grid-item p {
+      font-size: 15px;
+      margin-bottom: 20px;
+      max-width: none;
+    }
+
+    /* ── NUMBERED SEQUENCE (ordered items with indicators) ─── */
+    .numbered-sequence {
+      margin-bottom: 48px;
+    }
+
+    .sequence-item {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+
+    .sequence-num {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+      margin-top: 2px;
+    }
+
+    .sequence-content strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .sequence-content span {
+      font-size: 15px;
+      color: var(--ink-muted);
+      line-height: 1.6;
+    }
+
+    /* ── SPLIT COMPARISON (two-column say/avoid grid) ──────── */
+    .split-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 64px;
+    }
+
+    .split-col {
+      background: var(--white);
+      padding: 32px;
+    }
+
+    .split-col.negative {
+      background: var(--red-light);
+    }
+
+    .split-col h4 {
+      margin-bottom: 20px;
+    }
+
+    .split-item {
+      font-size: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ink-muted);
+      line-height: 1.5;
+    }
+
+    .split-item:last-child {
+      border-bottom: none;
+    }
+
+    .split-item strong {
+      display: block;
+      font-weight: 500;
+      color: var(--ink);
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    /* ── INFO CARD GRID (bordered cards, no hover) ─────────── */
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .info-card {
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 24px;
+    }
+
+    .info-card h4 {
+      margin-bottom: 8px;
+    }
+
+    .info-card p {
+      font-size: 14px;
+      margin: 0;
+      max-width: none;
+    }
+
+    /* ── ACTION STRIP (3-col callout cards) ─────────────────── */
+    .action-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .action-card {
+      border-left: 3px solid var(--primary);
+      padding: 24px 20px;
+      background: var(--primary-subtle);
+      border-radius: 0 10px 10px 0;
+    }
+
+    .action-card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .action-card p {
+      font-size: 14px;
+      margin: 0;
+      max-width: none;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      section {
+        padding: 64px 20px;
+      }
+
+      .cover-inner {
+        padding: 80px 20px 64px;
+      }
+
+      .pillars,
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .do-dont {
+        grid-template-columns: 1fr;
+      }
+
+      .data-table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      .doc-footer {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-meta {
+        text-align: left;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .split-comparison {
+        grid-template-columns: 1fr;
+      }
+
+      .info-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .action-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .narrative-inner {
+        padding: 64px 20px;
+      }
+
+      hr.rule {
+        margin: 0 20px;
+      }
+    }
+  
+
+    :root{
+      --ide-bg:#1e1e1e;
+      --ide-bar:#2d2d2d;
+      --ide-text:#d4d4d4;
+      --ide-ln:#6a6a6a;
+      --ide-border:#3a3a3a;
+      --ide-filename:#c9c9c9;
+      --dot-red:#ff5f56;
+      --dot-yellow:#ffbd2e;
+      --dot-green:#27c93f;
+      --stuck:#B8860B;
+      --stuck-light:#FFF8E7;
+    }
+    .script-block{ margin-bottom:28px; }
+    .script-block:last-child{ margin-bottom:0; }
+    .block-tag{
+      display:flex; align-items:center; gap:6px;
+      font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    .block-tag .material-symbols-outlined{ font-size:16px; }
+    .tag-say{ color:var(--ink-faint); }
+    .tag-board{ color:var(--primary); }
+    .tag-code{ color:var(--ink-muted); }
+    .tag-ask{ color:var(--accent); }
+    .tag-stuck{ color:var(--stuck); }
+
+    .say-block p{
+      font-family:var(--font-display);
+      font-style:italic;
+      font-size:18px;
+      line-height:1.65;
+      color:var(--ink);
+      border-left:2px solid var(--rule);
+      padding-left:20px;
+      max-width:680px;
+    }
+    .say-block p strong{ font-style:normal; }
+
+    .board-block{
+      background:var(--surface);
+      border:1px solid var(--rule);
+      border-radius:10px;
+      padding:24px 28px;
+    }
+    .board-ascii{
+      font-family:'SFMono-Regular', 'Consolas', 'Menlo', monospace;
+      font-size:13.5px;
+      line-height:1.7;
+      color:var(--ink-2);
+      white-space:pre;
+      overflow-x:auto;
+    }
+    .mermaid-wrap{ overflow-x:auto; display:flex; justify-content:center; }
+
+    .ide-window{
+      background:var(--ide-bg);
+      border-radius:10px;
+      overflow:hidden;
+      border:1px solid var(--ide-border);
+    }
+    .ide-titlebar{
+      background:var(--ide-bar);
+      display:flex; align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-bottom:1px solid var(--ide-border);
+    }
+    .ide-dots{ display:flex; gap:7px; }
+    .ide-dots .dot{ width:11px; height:11px; border-radius:50%; display:inline-block; }
+    .ide-dots .dot.red{ background:var(--dot-red); }
+    .ide-dots .dot.yellow{ background:var(--dot-yellow); }
+    .ide-dots .dot.green{ background:var(--dot-green); }
+    .ide-filename{
+      font-size:12.5px; color:var(--ide-filename); font-family:var(--font-body);
+      margin:0 auto; letter-spacing:0.01em;
+    }
+    .ide-window.terminal .ide-filename{ margin:0; color:#9fd0a4; font-family:'Menlo','Consolas',monospace; }
+    .ide-window.terminal .ide-titlebar{ justify-content:flex-start; }
+    .ide-body{ padding:18px 0; overflow-x:auto; }
+    .ide-body pre{ margin:0; }
+    .ide-body code{
+      font-family:'SFMono-Regular','Menlo','Consolas',monospace !important;
+      font-size:13px !important;
+      line-height:1.65 !important;
+      background:transparent !important;
+      padding:0 !important;
+    }
+    .ide-window.terminal .ide-body code{ color:#8fd18f !important; }
+    .code-line{ display:flex; }
+    .code-line .ln{
+      width:34px; min-width:34px; text-align:right; padding-right:16px;
+      color:var(--ide-ln); user-select:none; font-size:12.5px;
+    }
+    .code-line .lc{ flex:1; padding-right:24px; white-space:pre; }
+    .ide-window.terminal .code-line .ln{ display:none; }
+    .ide-window.terminal .code-line .lc::before{ content:"$ "; color:#6a9955; }
+    .ide-caption{ font-size:13px; color:var(--ink-faint); margin-top:8px; font-style:italic; }
+
+    .ask-block{ border:1px solid var(--rule); border-radius:10px; padding:24px 28px; }
+    .ask-q{ font-size:16px; font-weight:500; color:var(--ink); margin-bottom:16px; max-width:none; }
+    .ask-cols{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .ask-col{ border-radius:8px; padding:14px 16px; }
+    .ask-col h4{ font-size:11px; margin-bottom:6px; }
+    .ask-col p{ font-size:14px; margin:0; max-width:none; }
+    .ask-col.expected{ background:var(--green-light); border-left:3px solid var(--green-mid); }
+    .ask-col.expected h4{ color:var(--green-mid); }
+    .ask-col.expected p{ color:var(--green-dark); }
+    .ask-col.wrong{ background:var(--red-light); border-left:3px solid var(--red); }
+    .ask-col.wrong h4{ color:var(--red); }
+    .ask-col.wrong p{ color:var(--red-dark); }
+    .ask-response{ margin-top:16px; font-size:15px; color:var(--ink-muted); max-width:none; }
+
+    .stuck-block{ background:var(--stuck-light); border-left:3px solid var(--stuck); border-radius:0 8px 8px 0; padding:16px 20px; }
+    .stuck-block p{ font-size:14.5px; color:#6b5108; margin:0; max-width:none; }
+
+    .gotchas-list{ list-style:none; }
+    .gotchas-list li{ display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--rule); font-size:14.5px; color:var(--ink-2); }
+    .gotchas-list li:last-child{ border-bottom:none; }
+    .gotchas-list li .material-symbols-outlined{ color:var(--red); font-size:18px; margin-top:1px; }
+
+    .inline-code{
+      font-family:'SFMono-Regular','Menlo','Consolas',monospace;
+      background:var(--surface); border:1px solid var(--rule);
+      padding:1px 6px; border-radius:4px; font-size:0.88em; color:var(--primary-dark);
+    }
+    section.surface{ background:var(--surface); }
+
+    .setup-list{ margin:0; padding-left:0; list-style:none; }
+    .setup-list li{ display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--rule); font-size:15px; color:var(--ink-muted); }
+    .setup-list li:last-child{ border-bottom:none; }
+    .setup-list li .material-symbols-outlined{ color:var(--primary); font-size:18px; margin-top:2px; }
+
+    .brand-mark{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .brand-badge{ display:block; }
+    .brand-badge circle{ fill:var(--primary); }
+    .brand-badge text{ fill:var(--white); font-family:var(--font-display); }
+    .brand-name{ font-family:var(--font-body); font-size:14px; font-weight:600; color:var(--ink); letter-spacing:0.01em; }
+    .brand-name span{ display:block; font-size:10px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-top:1px; }
+
+</style>
+</head>
+<body>
+<nav>
+<a href="#setup" class="brand-mark">
+  <svg class="brand-badge" width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="17" cy="17" r="17"></circle>
+    <text x="17" y="22" text-anchor="middle" font-size="13" font-weight="600">MS</text>
+  </svg>
+  <span class="brand-name">Manjot Singh<span>Instructor · Backend Engineering</span></span>
+</a>
+<ul class="nav-links">
+<li><a href="#cold-open">Cold open</a></li>
+<li><a href="#inheritance">Inheritance</a></li>
+<li><a href="#lsp">Substitution</a></li>
+<li><a href="#polymorphism">Polymorphism</a></li>
+<li><a href="#abstraction">Abstraction</a></li>
+<li><a href="#composition">Composition</a></li>
+<li><a href="#recap">Recap</a></li>
+</ul>
+</nav>
+
+<div class="cover">
+  <div class="cover-inner">
+    <p class="cover-label">Teaching Script — Option A</p>
+    <h1>OOP: Inheritance, Polymorphism, and Why Abstraction Exists</h1>
+    <p class="cover-sub">A live, 120-minute class script — spoken language, time markers, board diagrams, live-coded snippets, and the questions the room actually asks.</p>
+    <div class="cover-meta">
+<div class="cover-meta-item"><label>Instructor</label><span>Manjot Singh</span></div>
+<div class="cover-meta-item"><label>Audience</label><span>Engineers, 0–3 yrs experience</span></div>
+<div class="cover-meta-item"><label>Duration</label><span>120 minutes</span></div>
+<div class="cover-meta-item"><label>Format</label><span>Live-delivered script</span></div>
+    </div>
+  </div>
+</div>
+
+  <section id="setup" class="">
+    <p class="section-num">Setup</p>
+    <p class="section-label">Before you teach</p>
+    <h2>How to run this class</h2>
+    <div class="callout"><p style="font-style:normal;">How to use this document: &lt;strong&gt;SAY&lt;/strong&gt; is close to word-for-word what you say. &lt;strong&gt;BOARD&lt;/strong&gt; is what goes on the whiteboard/screen at that moment. &lt;strong&gt;CODE&lt;/strong&gt; is typed live, in the order given. &lt;strong&gt;ASK&lt;/strong&gt; is a question to the room, with the likely wrong answer listed so you recognize it when you hear it. &lt;strong&gt;IF STUCK&lt;/strong&gt; is what to do when the room goes quiet.</p></div>
+<h3>Scope decisions (and why)</h3><p>This class does not cover encapsulation from scratch (assumed known), generics, the diamond problem in depth, or a tour of GoF design patterns — even though the fix we build in Segment 5 *is* the Strategy pattern, and it gets named once, briefly. Each of those is its own class. What gets full depth instead: the <strong>Liskov Substitution Principle</strong> as the actual test for whether inheritance is appropriate (not the English "is-a" test, which is necessary but not sufficient), and <strong>composition over inheritance</strong> as the alternative — because the single most common OOP mistake this audience will make in the next year is reaching for <code class="inline-code">extends</code> when they wanted a field.</p>
+<h3>Before class starts</h3><ul class="setup-list"><li><span class="material-symbols-outlined">check_circle</span><span>A running Java project (any build tool) with a scratch <code class="inline-code">Main</code> class ready to run snippets from.</span></li>
+<li><span class="material-symbols-outlined">check_circle</span><span>The cold-open <code class="inline-code">PaymentProcessor</code> if/else example typed up and ready to run — don't build it live, it's meant to already feel painful when the class walks in.</span></li>
+<li><span class="material-symbols-outlined">check_circle</span><span>Whiteboard space for four things: the is-a checklist, the LSP definition, the dynamic-dispatch diagram, and the overloading-vs-overriding comparison table. Leave them all up.</span></li></ul>
+  </section>
+  <hr class="rule">
+  <section id="cold-open" class="">
+    <p class="section-num">Segment 1 · 00:00–00:07</p>
+    <p class="section-label">Cold open</p>
+    <h2>The type-checking mess</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Let me show you code that works. It ships, it passes tests, and it's going to get worse every single week.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">PaymentProcessor.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public class PaymentProcessor {
+    public void process(String type, double amount) {
+        if (type.equals("CREDIT_CARD")) {
+            System.out.println("Charging card: $" + amount);
+            // charge card logic
+        } else if (type.equals("PAYPAL")) {
+            System.out.println("Redirecting to PayPal: $" + amount);
+            // paypal logic
+        } else if (type.equals("BANK_TRANSFER")) {
+            System.out.println("Initiating wire transfer: $" + amount);
+            // bank logic
+        }
+    }
+}</code></pre></div>
+      </div>
+      <p class="ide-caption">Already running — this is meant to look like ordinary, shipped code.</p>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>This works. Now product wants Apple Pay support.</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Where do I go to add that?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>Add another else-if branch here.</p>
+        </div>
+      </div>
+      <p class="ask-response">Right — and now imagine this same string, "CREDIT_CARD" and friends, is also checked in the receipt generator, the refund service, the analytics dashboard, and the fraud checker. Five other files, each with their own if/else chain testing the same type string. How many places do you now touch to add Apple Pay?</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">What happens if I typo "CREDIT_CARD" as "CREDIT_CRAD" in one of those five other files?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>Nothing throws. The condition is just false, the transaction silently does nothing in that one file, and nobody finds out until a customer complains.</p>
+        </div>
+      </div>
+      <p class="ask-response">No compiler error, no exception — a plain string comparison that's wrong just quietly does the wrong thing. That's the actual cost of this design, not just the tedium of touching five files.</p>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>The core issue: the *type* of a thing knows what it is, but nothing about *how it should behave* lives with the type. Behavior is scattered across whoever happens to check the type string. What if, instead, each payment type carried its own behavior, and the caller just said "process yourself" without caring which kind it is? That's the whole two hours: how do we get there safely, without creating new problems on the way.</p>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="inheritance" class="">
+    <p class="section-num">Segment 2 · 00:07–00:20</p>
+    <p class="section-label">Foundations</p>
+    <h2>Why inheritance exists</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Before we can get to "each type carries its own behavior," we need a mechanism for saying "this is a kind of that" and sharing structure between related types. That mechanism is inheritance — and I want to build it properly before I show you where it goes wrong, because you need to see it work first.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">Animal.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public class Animal {
+    protected String name;
+    public Animal(String name) { this.name = name; }
+    public void eat() { System.out.println(name + " is eating."); }
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">Dog.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public class Dog extends Animal {
+    public Dog(String name) { super(name); }
+    public void bark() { System.out.println(name + " says Woof!"); }
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Dog never redefines eat(). Why does <code class="inline-code">new Dog("Rex").eat()</code> work at all?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>It's inherited — a subclass automatically gets every public/protected member of its superclass, without rewriting it.</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>That's the reuse half of inheritance, and it's real, but it's not the important half — we'll get to the important half in Segment 5. The half to internalize right now is the test for *when it's appropriate at all*: the "is-a" test. Dog IS AN Animal. That's a legitimate hierarchy.</p>
+    </div>
+
+    <div class="script-block board-block">
+      <div class="block-tag tag-board"><span class="material-symbols-outlined">draw</span>Board / screen</div>
+      <pre class="board-ascii">Before you write "extends", ask:
+  Is B literally a kind of A?             ("Dog is an Animal" -&gt; yes)
+  Will every A-shaped assumption still hold for B?   (Segment 3)
+  If it's really "B uses an A" or "B has an A"
+    -&gt; that's composition, not inheritance   (Segment 9)</pre>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Quick gut check: should <code class="inline-code">SavingsAccount</code> extend <code class="inline-code">CheckingAccount</code>? Or should both extend some shared <code class="inline-code">Account</code>?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>Both should extend (or implement) a shared Account type. SavingsAccount is not a kind of CheckingAccount — they're siblings, not parent and child.</p>
+        </div>
+          <div class="ask-col wrong">
+            <h4>Common wrong answer</h4>
+            <p>SavingsAccount extends CheckingAccount, since a savings account is kind of like a checking account.</p>
+          </div>
+      </div>
+      <p class="ask-response">"Kind of like" is doing a lot of work in that sentence, and that's exactly the trap — a vague resemblance isn't the is-a test. Neither is literally a specialization of the other; they're two different specializations of a shared concept. That shared concept is the actual superclass.</p>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="lsp" class="surface">
+    <p class="section-num">Segment 3 · 00:20–00:32</p>
+    <p class="section-label">Where it breaks</p>
+    <h2>The Liskov Substitution Principle</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Now let's break it, on purpose, with a hierarchy that passes the English "is-a" test perfectly and still causes real bugs.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">Rectangle.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">class Rectangle {
+    protected double width, height;
+    public void setWidth(double w) { width = w; }
+    public void setHeight(double h) { height = h; }
+    public double area() { return width * height; }
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">Square.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">class Square extends Rectangle {
+    @Override
+    public void setWidth(double w) { width = w; height = w; }
+    @Override
+    public void setHeight(double h) { width = h; height = h; }
+}</code></pre></div>
+      </div>
+      <p class="ide-caption">Square keeps both sides equal by having each setter update both fields.</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Mathematically, is a square a rectangle? Given that, this looks like a perfectly reasonable hierarchy. Now: I write a method that takes any Rectangle, calls setWidth(5), then setHeight(10), then asserts area() == 50. Does that assertion still hold if I hand it a Square instead of a plain Rectangle?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>No. Square's setHeight(10) also overwrites width to 10, because that's how it keeps itself square. So after both calls, width and height are both 10, and area() is 100, not 50.</p>
+        </div>
+          <div class="ask-col wrong">
+            <h4>Common wrong answer</h4>
+            <p>Yes — a square is still a rectangle, so any Rectangle code should work fine on it.</p>
+          </div>
+      </div>
+      <p class="ask-response">Walk it through on the board with them, line by line, plugging in Square's overridden setters. The area comes out to 100. Being a rectangle in the mathematical, English sense didn't save the assertion — the code that was correct for every Rectangle is now wrong for this particular subclass.</p>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>This is the actual definition of the Liskov Substitution Principle, and it's stricter than "is-a": if S is a subtype of T, you should be able to replace any T with an S, anywhere, without breaking the correctness of code written against T. It's not asking whether the English description fits — it's asking whether the *behavioral contract* callers silently rely on still holds. Rectangle's contract implicitly promises that setWidth doesn't touch height. Square breaks that promise to keep a different promise to itself.</p>
+    </div>
+
+    <div class="script-block board-block">
+      <div class="block-tag tag-board"><span class="material-symbols-outlined">draw</span>Board / screen</div>
+      <pre class="board-ascii">Liskov Substitution Principle:
+If S extends T, any code that correctly works with a T
+must also work correctly with an S, with no surprises.
+
+"Is-a" in English is necessary, but not sufficient.
+The BEHAVIOR has to hold too.</pre>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Same idea, classic other example: Bird has a fly() method, Penguin extends Bird. What breaks?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>Penguins can't fly, so fly() either throws, does nothing, or lies — and any code that calls fly() on a Bird reference now misbehaves the moment that Bird happens to be a Penguin.</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="script-block stuck-block">
+      <div class="block-tag tag-stuck"><span class="material-symbols-outlined">help</span>If they're stuck</div>
+      <p>If "behavioral contract" feels too abstract, ground it: contracts aren't just what's written in a method signature — they're the assumptions every caller silently relies on. "width and height are independent after individual setter calls" is one of those unwritten assumptions every piece of code calling Rectangle relies on, even though it's never written down anywhere.</p>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="break" class="">
+    <p class="section-num">Segment 4 · 00:32–00:37</p>
+    <p class="section-label">Checkpoint</p>
+    <h2>Break</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Five-minute break. Two questions on the board — think about them, we'll answer when we're back.</p>
+    </div>
+
+    <div class="script-block board-block">
+      <div class="block-tag tag-board"><span class="material-symbols-outlined">draw</span>Board / screen</div>
+      <pre class="board-ascii">1. What's the "is-a" test for inheritance?
+2. Why did Square/Rectangle break, even though a square genuinely IS a rectangle?</pre>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="polymorphism" class="">
+    <p class="section-num">Segment 5 · 00:37–00:57</p>
+    <p class="section-label">Polymorphism</p>
+    <h2>Dynamic dispatch fixes the cold open</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Now we have the tool to actually fix Segment 1's mess, properly. Instead of one class checking type strings, define what every payment type can *do*.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">PaymentMethod.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public interface PaymentMethod {
+    void process(double amount);
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">CreditCardPayment.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public class CreditCardPayment implements PaymentMethod {
+    @Override
+    public void process(double amount) {
+        System.out.println("Charging card: $" + amount);
+    }
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">PayPalPayment.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public class PayPalPayment implements PaymentMethod {
+    @Override
+    public void process(double amount) {
+        System.out.println("Redirecting to PayPal: $" + amount);
+    }
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">PaymentProcessor.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public class PaymentProcessor {
+    public void process(PaymentMethod method, double amount) {
+        method.process(amount);
+    }
+}</code></pre></div>
+      </div>
+      <p class="ide-caption">No if, no else, no string. The if/else chain from Segment 1 is just gone.</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">PaymentProcessor's code just says <code class="inline-code">method.process(amount)</code>, and <code class="inline-code">method</code> is declared as type PaymentMethod. How does the JVM know which class's process() to actually run?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>It looks at the actual runtime type of the object — not the declared/reference type. Every object carries a reference to its real class's method table, and at runtime the JVM looks up process() in *that* table.</p>
+        </div>
+          <div class="ask-col wrong">
+            <h4>Common wrong answer</h4>
+            <p>It runs PaymentMethod's own process() — but PaymentMethod doesn't have a body, so that can't be it either.</p>
+          </div>
+      </div>
+      <p class="ask-response">Right, PaymentMethod is an interface — there's no default body to fall back to (ignore default methods for a moment, we'll hit those in Segment 7). The lookup happens on whatever concrete object is actually sitting in that variable at that moment, which is why this is called runtime polymorphism — the decision is made at runtime, based on the real object, not at compile time, based on the declared type.</p>
+    </div>
+
+    <div class="script-block board-block">
+      <div class="block-tag tag-board"><span class="material-symbols-outlined">draw</span>Board / screen</div>
+      <pre class="board-ascii">PaymentMethod method = new PayPalPayment();
+                ↑                ↑
+          declared type      actual (runtime) type
+
+method.process(amount)
+  -&gt; JVM looks at the ACTUAL type (PayPalPayment)
+  -&gt; runs PayPalPayment's process(), not some generic default</pre>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Now add Apple Pay. Watch what I touch.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">ApplePayPayment.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public class ApplePayPayment implements PaymentMethod {
+    @Override
+    public void process(double amount) {
+        System.out.println("Authorizing via Apple Pay: $" + amount);
+    }
+}</code></pre></div>
+      </div>
+      <p class="ide-caption">One new file. PaymentProcessor.java is not open, and doesn't need to be.</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Is the Segment 1 typo bug — "CREDIT_CRAD" silently doing nothing — possible here?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>No. There's no string to typo. You pass an actual PaymentMethod object; if a class doesn't implement process(), it doesn't compile at all.</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">We just added a whole new payment type without editing a single existing, already-tested file. Anyone know what principle that's an example of?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>The Open/Closed Principle — open for extension (new subclasses), closed for modification (existing, tested code doesn't change). If nobody has the term, that's fine — just name it and move on, the behavior matters more than the label.</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>One more thing worth naming, briefly, because you'll see the term elsewhere: this exact shape — swapping behavior in and out through a shared interface — is called the Strategy pattern. We're not doing a design-patterns unit today. Just recognize the shape when you see it; you built it yourself in the last ten minutes.</p>
+    </div>
+
+    <div class="script-block stuck-block">
+      <div class="block-tag tag-stuck"><span class="material-symbols-outlined">help</span>If they're stuck</div>
+      <p>If dynamic dispatch still feels like magic, use a mailing analogy: you address a letter to "whoever currently occupies the role of process()" — you don't know at write-time whether that's CreditCardPayment or PayPalPayment, but whoever's actually living there when the letter arrives is who opens it. The JVM resolves "who's actually there" at the moment the call happens, not when the code was written.</p>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="overload-override" class="surface">
+    <p class="section-num">Segment 6 · 00:57–01:09</p>
+    <p class="section-label">A common mix-up</p>
+    <h2>Overloading vs. overriding</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Two words that sound related and get confused constantly: overloading and overriding. Overriding is exactly what we just did in Segment 5 — a subclass provides its own implementation of a method already defined by its supertype, and the runtime decides which version runs based on the actual object. Overloading is a completely different mechanism: multiple methods with the *same name* but *different parameter lists*, and it's resolved at *compile time*, based on the *declared* types of the arguments — nothing about runtime enters into it.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">Calculator.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public class Calculator {
+    public int add(int a, int b) { return a + b; }
+    public double add(double a, double b) { return a + b; }
+    public int add(int a, int b, int c) { return a + b + c; }
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Which add() runs for calc.add(1, 2)? For calc.add(1.0, 2.0)? For calc.add(1, 2, 3)?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>The compiler matches by parameter type and count, at compile time — the int version, the double version, and the three-argument version, respectively. No ambiguity, decided before the program ever runs.</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">OverloadTrap.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public void print(Object obj) { System.out.println("Object version"); }
+public void print(String str) { System.out.println("String version"); }
+
+Object o = "hello";
+print(o);   // which one runs?</code></pre></div>
+      </div>
+      <p class="ide-caption">o holds a String at runtime. Ask before revealing the answer.</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">o actually holds a String at runtime. Which print() runs?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>The Object version — because overload resolution happens at compile time, based on the *declared* type of the variable (Object), not what it actually holds at runtime.</p>
+        </div>
+          <div class="ask-col wrong">
+            <h4>Common wrong answer</h4>
+            <p>The String version, since that's what o actually is when the line executes.</p>
+          </div>
+      </div>
+      <p class="ask-response">This is the exact opposite of what Segment 5 taught you about overriding, and mixing the two up is the single most common trip-up in this whole topic. Overriding looks at the real object at runtime. Overloading looks at the declared type at compile time, full stop — it never even glances at what's actually in the variable when the program runs.</p>
+    </div>
+
+    <div class="script-block board-block">
+      <div class="block-tag tag-board"><span class="material-symbols-outlined">draw</span>Board / screen</div>
+      <pre class="board-ascii">OVERRIDING                          OVERLOADING
+same signature, subclass            same name, different params
+resolved at RUNTIME                 resolved at COMPILE TIME
+based on ACTUAL object type         based on DECLARED type of arguments
+needs inheritance / an interface    same class, no inheritance needed
+@Override annotation recommended    no special annotation</pre>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Constructors can be overloaded but never overridden — they aren't inherited at all. And @Override is more than documentation: if you typo a parameter type or name while thinking you're overriding, without @Override the compiler will happily let you create a brand-new, unrelated overload instead — no error, just a method that silently never runs when you expected an override to kick in. With @Override, that same typo becomes a compile error instead of a 2am bug.</p>
+    </div>
+
+    <div class="script-block stuck-block">
+      <div class="block-tag tag-stuck"><span class="material-symbols-outlined">help</span>If they're stuck</div>
+      <p>If "resolved by declared type, not actual type" feels backwards right after learning overriding does the opposite, slow down and repeat the board exactly, then rerun the o example: "The compiler doesn't execute your program to decide which print to call — it decides once, while compiling, using only what it can see in the variable's declared type. It has no way of knowing, at compile time, that o will hold a String in every case it might run."</p>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="abstraction" class="">
+    <p class="section-num">Segment 7 · 01:09–01:25</p>
+    <p class="section-label">Abstraction</p>
+    <h2>Why it exists — and when it doesn't earn its keep</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Why do we even need PaymentMethod as an interface, if CreditCardPayment and PayPalPayment already work fine as classes on their own? The honest answer isn't "to hide implementation details" — that's encapsulation, and it's a slightly different concern that people reach for as an explanation because it sounds right without actually explaining anything. Abstraction is about depending on *what something does*, not *which concrete type it is* — so the code that depends on it doesn't have to change when a new implementation shows up, or an old one changes.</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Suppose PaymentProcessor.process() had instead been written to take a CreditCardPayment parameter directly — hardcoded to the concrete class. What has to happen when PayPal support gets added?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>PaymentProcessor itself needs a new overloaded method, or a rewrite. The interface is specifically what let PaymentProcessor stay untouched in Segment 5 — that's the entire payoff.</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">PaymentMethod.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public interface PaymentMethod {
+    void process(double amount);
+
+    default void logAttempt(double amount) {
+        System.out.println("Attempting payment of $" + amount);
+    }
+}</code></pre></div>
+      </div>
+      <p class="ide-caption">A default method — Java 8+ lets an interface carry a body, not just a signature.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">PaymentMethodBase.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">public abstract class PaymentMethodBase implements PaymentMethod {
+    protected final String transactionId = UUID.randomUUID().toString();
+
+    protected void logCommon() {
+        System.out.println("txn=" + transactionId);
+    }
+
+    public abstract void process(double amount);
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Use an interface when you're defining a capability with no shared state — "anything that can process a payment." Use an abstract class when subclasses need to share actual state or a partial implementation, not just a signature — every payment method here needs a transactionId and logCommon(), and an abstract base class avoids retyping that in every subclass. A class can implement many interfaces, but extend only one class — that's as much the practical dividing line as the philosophical one.</p>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>One sentence on default methods, since I just used one: if a class implements two interfaces that both define a conflicting default method, Java will not silently pick one for you — it forces you to override and resolve it explicitly. That's the whole diamond-problem story for today; it's a corner case, not core material.</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">If I have exactly one implementation of PaymentMethod today, with no concrete plan for a second, do I still need the interface?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>There's no single right answer — that's the point of asking it. If you're confident there will never be a second implementation and you're not defining a testable boundary, an interface here is a layer of indirection with no current payoff. The value of abstraction scales with how much variation or future substitution you actually expect — it isn't a rule to apply everywhere by default.</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="script-block stuck-block">
+      <div class="block-tag tag-stuck"><span class="material-symbols-outlined">help</span>If they're stuck</div>
+      <p>If "substitutability, not hiding" isn't landing, return to Segment 1: we can add Apple Pay without touching PaymentProcessor not because we hid CreditCardPayment's internals, but because PaymentProcessor never knew about CreditCardPayment specifically in the first place — it only ever knew the interface. That's the actual value, and it has nothing to do with secrecy.</p>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="open-closed" class="surface">
+    <p class="section-num">Segment 8 · 01:25–01:39</p>
+    <p class="section-label">Live code</p>
+    <h2>Open/closed, proven end to end</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Let's build the whole thing end to end and prove the closed-for-modification claim by literally not opening PaymentProcessor.java again.</p>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Add a fourth payment type — BankTransferPayment — same shape as ApplePayPayment. New file only. Then write a test that proves PaymentProcessor is testable without any real payment logic at all, because it only ever depends on the interface shape.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">PaymentProcessorTest.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">class FakePayment implements PaymentMethod {
+    boolean called = false;
+    public void process(double amount) { called = true; }
+}
+
+@Test
+void processorCallsProcessOnWhicheverMethodItReceives() {
+    FakePayment fake = new FakePayment();
+    new PaymentProcessor().process(fake, 100.0);
+    assertTrue(fake.called);
+}</code></pre></div>
+      </div>
+      <p class="ide-caption">No real card, no real network call, no mocking framework needed — just an object shaped like the interface.</p>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">What would this test look like if PaymentProcessor were hardcoded to CreditCardPayment instead of the interface?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>You'd need a real CreditCardPayment (or heavy mocking of one), possibly touching real payment logic — much harder to isolate, and the abstraction is exactly what removed that need.</p>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="composition" class="">
+    <p class="section-num">Segment 9 · 01:39–01:51</p>
+    <p class="section-label">The other side</p>
+    <h2>Composition over inheritance</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Inheritance isn't free. Every subclass is coupled not just to its superclass's public interface, but to its *implementation details* — and that coupling can bite you later, even when you did nothing wrong.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">InstrumentedHashSet.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">class InstrumentedHashSet&lt;E&gt; extends HashSet&lt;E&gt; {
+    private int addCount = 0;
+
+    @Override
+    public boolean add(E e) {
+        addCount++;
+        return super.add(e);
+    }
+
+    @Override
+    public boolean addAll(Collection&lt;? extends E&gt; c) {
+        addCount += c.size();
+        return super.addAll(c);
+    }
+
+    public int getAddCount() { return addCount; }
+}</code></pre></div>
+      </div>
+      
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">I call set.addAll(List.of("a", "b", "c")). What's addCount afterward?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>It depends on HashSet's internal implementation, and in the real JDK it comes out to 6, not 3.</p>
+        </div>
+          <div class="ask-col wrong">
+            <h4>Common wrong answer</h4>
+            <p>3 — one for each element added.</p>
+          </div>
+      </div>
+      <p class="ask-response">HashSet's own addAll() is internally implemented by calling add() once per element. So addCount gets bumped once in your overridden addAll (+3), and then again inside each of those three internal calls to your overridden add() (+3 more) — 6 total. The bug isn't in your logic. It's that your subclass quietly assumed *how* addAll() is implemented internally, and that implementation detail was never part of any documented contract — it can even change between JDK versions.</p>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>This is the fragile base class problem: a change to a superclass's internal implementation — not its documented contract — can silently break subclasses, because subclasses often end up depending on behavior nobody ever promised to keep stable. The fix: prefer composition. Wrap a HashSet inside your own class instead of extending it, and expose only what you actually want.</p>
+    </div>
+
+    <div class="script-block code-block">
+      <div class="block-tag tag-code"><span class="material-symbols-outlined">code</span>Code — live</div>
+      <div class="ide-window">
+        <div class="ide-titlebar">
+          <div class="ide-dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          <div class="ide-filename">InstrumentedSet.java</div>
+        </div>
+        <div class="ide-body"><pre><code class="language-java">class InstrumentedSet&lt;E&gt; {
+    private final Set&lt;E&gt; delegate = new HashSet&lt;&gt;();
+    private int addCount = 0;
+
+    public boolean add(E e) {
+        addCount++;
+        return delegate.add(e);
+    }
+
+    public boolean addAll(Collection&lt;? extends E&gt; c) {
+        addCount += c.size();
+        return delegate.addAll(c);
+    }
+
+    public int getAddCount() { return addCount; }
+}</code></pre></div>
+      </div>
+      <p class="ide-caption">addCount is now exactly what was added — the internals of HashSet are none of this class's business.</p>
+    </div>
+
+    <div class="script-block board-block">
+      <div class="block-tag tag-board"><span class="material-symbols-outlined">draw</span>Board / screen</div>
+      <pre class="board-ascii">"Favor composition over inheritance" (Effective Java, Item 18)
+
+Inheritance:  reuses implementation AND exposes you to
+              changes in that implementation's internals
+
+Composition:  reuses through a reference (has-a) — you decide
+              exactly which methods you expose, and how</pre>
+    </div>
+
+    <div class="script-block ask-block">
+      <div class="block-tag tag-ask"><span class="material-symbols-outlined">quiz</span>Ask the room</div>
+      <p class="ask-q">Given everything today, is inheritance ever the right call, or should we default to composition always?</p>
+      <div class="ask-cols">
+        <div class="ask-col expected">
+          <h4>Expected answer</h4>
+          <p>Inheritance earns its place when there's a genuine is-a relationship AND you actually need polymorphic substitutability — client code treating many types uniformly through one supertype, the way PaymentProcessor does. Composition is right when you just want to reuse behavior without that substitutability, or when the is-a claim fails Segment 3's Liskov test.</p>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="script-block stuck-block">
+      <div class="block-tag tag-stuck"><span class="material-symbols-outlined">help</span>If they're stuck</div>
+      <p>If the addCount surprise doesn't land from the explanation alone, run it live with a println inside add() — watching it print twice per element for a single addAll() call is more convincing than any diagram.</p>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="recap" class="surface">
+    <p class="section-num">Segment 10 · 01:51–01:57</p>
+    <p class="section-label">Recap</p>
+    <h2>The gotchas, as a checklist</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>Fast recap, as a list of things that will actually bite you.</p>
+    </div>
+
+    <div class="script-block gotchas-block">
+      <ul class="gotchas-list"><li><span class="material-symbols-outlined">close</span><span>Using inheritance purely for code reuse — it also inherits every future change to the superclass's internals, whether you want that or not</span></li>
+<li><span class="material-symbols-outlined">close</span><span>Trusting the English "is-a" test alone — Square/Rectangle passes it and still fails Liskov substitution</span></li>
+<li><span class="material-symbols-outlined">close</span><span>Confusing overloading (compile-time, by declared argument type) with overriding (runtime, by actual object type)</span></li>
+<li><span class="material-symbols-outlined">close</span><span>Forgetting @Override — a typo'd signature silently becomes a new, unrelated overload instead of a compile error</span></li>
+<li><span class="material-symbols-outlined">close</span><span>Calling an overridable method from a constructor — the subclass's own fields aren't initialized yet when the superclass constructor body runs</span></li>
+<li><span class="material-symbols-outlined">close</span><span>Treating abstraction as "hiding details" instead of "enabling substitution" — substitution is what actually removed the if/else chain</span></li>
+<li><span class="material-symbols-outlined">close</span><span>Reaching for an interface before there's a second implementation or a test boundary that needs one — pure overhead until then</span></li></ul>
+    </div>
+
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>If you remember nothing else: the "is-a" test gets you in the door, but Liskov substitution is the real bar. Polymorphism is what let us delete the if/else chain, and it works because callers depend on an interface, not a concrete type — which is the entire point of abstraction. And inheritance is a tool for substitutability, not a default reuse mechanism; when you just want to reuse behavior, composition is usually the safer choice.</p>
+    </div>
+  </section>
+  <hr class="rule">
+  <section id="wrapup" class="">
+    <p class="section-num">Segment 11 · 01:57–02:00</p>
+    <p class="section-label">Close</p>
+    <h2>Wrap-up and Q&amp;A</h2>
+    
+    <div class="script-block say-block">
+      <div class="block-tag tag-say"><span class="material-symbols-outlined">record_voice_over</span>Say</div>
+      <p>That's the class. Two hours, one thread pulled all the way through: a type-checking mess, fixed by giving each type its own behavior — which needed inheritance to establish "is-a," needed Liskov substitution to know when "is-a" is actually safe, needed polymorphism and dynamic dispatch to make the fix work at runtime, and needed abstraction to make the fix durable against future change. Composition was the reminder that none of this is a hammer for every nail. Questions — anything you want rebuilt on the board, or run again with a different example?</p>
+    </div>
+
+    <div class="script-block stuck-block">
+      <div class="block-tag tag-stuck"><span class="material-symbols-outlined">help</span>If they're stuck</div>
+      <p>If there's silence, reopen with the cold-open code: "Add a fifth payment type live, right now, and tell me every file you had to open." Watching the answer be "one" lands harder than any recap slide.</p>
+    </div>
+  </section>
+  <hr class="rule">
+<div class="doc-footer">
+  <div>
+    <h3>OOP: Inheritance, Polymorphism, and Why Abstraction Exists</h3>
+    <p>Teaching script — Script 2, Option A. Written to be read from, live: SAY is spoken word-for-word, BOARD is drawn as you talk, CODE is typed live in the order shown.</p>
+  </div>
+  <div class="footer-meta">
+    <label>Written &amp; taught by</label><span>Manjot Singh</span>
+<label>Duration</label><span>120 min</span>
+<label>Version</label><span>1.0</span>
+  </div>
+</div>
+
+<script>
+  hljs.configure({ languages: ['java','yaml','bash'] });
+  document.querySelectorAll('pre code').forEach(function(block){
+    hljs.highlightElement(block);
+    var lines = block.innerHTML.split('\n');
+    if (lines.length && lines[lines.length-1].trim() === '') lines.pop();
+    block.innerHTML = lines.map(function(l, i){
+      return '<span class="code-line"><span class="ln">'+(i+1)+'</span><span class="lc">'+(l.length?l:' ')+'</span></span>';
+    }).join('\n');
+  });
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose',
+    themeVariables: { primaryColor:'#F2F5FF', primaryTextColor:'#000A1B', primaryBorderColor:'#053BEE',
+      lineColor:'#666666', secondaryColor:'#F5F7FA', tertiaryColor:'#FFFFFF', fontFamily:'DM Sans' } });
+</script>
+</body>
+</html>
